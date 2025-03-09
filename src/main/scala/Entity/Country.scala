@@ -1,7 +1,17 @@
 package Entity
 
-import Utils.Attr
+case class Country(value: String) {
+  Country.add(this)
+}
 
-case class Country(country: String) extends Attr[String] {
-  def getValue: String = country
+object Country {
+  private var countryList: List[Country] = List()
+
+  def getList: List[Country] = countryList
+
+  private def add(country: Country): Unit = {
+    if (!countryList.exists(_.value == country.value)) {
+      countryList = countryList :+ country
+    }
+  }
 }

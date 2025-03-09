@@ -24,7 +24,7 @@ object Main {
       val restaurant = line(colNamesMap("Restaurant"))
       val city = City(line(colNamesMap("City")))
       val country = Country(line(colNamesMap("Country")))
-      val coordinates = new Coordinates(line(colNamesMap("Lat")).toFloatOption, line(colNamesMap("Lon")).toFloatOption)
+      val coordinates = Coordinates(line(colNamesMap("Lat")).toFloatOption, line(colNamesMap("Lon")).toFloatOption)
       val Stars = line(colNamesMap("Stars")).toIntOption
       val chef = line(colNamesMap("Chef"))
       val website = line(colNamesMap("Website"))
@@ -34,9 +34,15 @@ object Main {
 
 
       restaurants = restaurants :+ Restaurant(restaurant, Place(city, country, coordinates), website, currency, description, ranking, Stars, chef, menu)
+
+
     }
     reader.close()
 
+    for(restaurant <- restaurants){
+      restaurant.printDescription()
+      println()
+    }
 
   }
 

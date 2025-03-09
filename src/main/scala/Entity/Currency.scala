@@ -1,7 +1,17 @@
 package Entity
 
-import Utils.Attr
+case class Currency(value: String) {
+  Currency.add(this)
+}
 
-case class Currency(currency: String) extends Attr[String] {
-  def getValue: String = currency
+object Currency {
+  private var currencyList: List[Currency] = List()
+
+  def getList: List[Currency] = currencyList
+
+  private def add(currency: Currency): Unit = {
+    if (!currencyList.exists(_.value == currency.value)) {
+      currencyList = currencyList :+ currency
+    }
+  }
 }
