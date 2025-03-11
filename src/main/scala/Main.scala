@@ -4,20 +4,20 @@ import Entity.*
 import com.github.tototoshi.csv.*
 import java.io.File
 
-
-
-object Main {
-  def main(args: Array[String]): Unit = {
+@main def main=
+//object Main {
+//  def main(args: Array[String]): Unit = {
     val reader = CSVReader.open(new File("src/main/resources/02-50BestRestaurants.csv"))
     val it = reader.iterator
 
     val col_names = it.next()
     val colNamesMap: Map[String, Int] = col_names.zipWithIndex.toMap
 
+    // jpc: avoind mutable collections
     var restaurants = List[Restaurant]()
 
 
-    while (it.hasNext) {
+    while (it.hasNext) do
       val line = it.next()
 
       val ranking = Ranking(line(colNamesMap("Ranking")).toIntOption)
@@ -35,15 +35,12 @@ object Main {
 
       restaurants = restaurants :+ Restaurant(restaurant, Place(city, country, coordinates), website, currency, description, ranking, Stars, chef, menu)
 
-
-    }
     reader.close()
 
-    for(restaurant <- restaurants){
+    for(restaurant <- restaurants) do
       restaurant.printDescription()
       println()
-    }
+    
 
-  }
-
-}
+//  }
+//}
