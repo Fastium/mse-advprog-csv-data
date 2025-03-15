@@ -1,16 +1,24 @@
 package TopRestaurant
 
-case class Ranking(value: Option[Int]) :
-  Ranking.add(this)
+import java.util.concurrent.atomic.AtomicReference
+import scala.collection.immutable.ListSet
 
-object Ranking :
-  //jpc: mutable state strikes again .....
-  private var rankingList: List[Ranking] = List()
+case class Ranking(value: Option[Int])
 
-  def getList: List[Ranking] = rankingList
+object Ranking:
+  private val rankingListRef: AtomicReference[ListSet[Ranking]] = new AtomicReference(ListSet.empty[Ranking])
 
-  private def add(ranking: Ranking): Unit = 
-    if (!rankingList.exists(_.value == ranking.value)) then
-      rankingList = rankingList :+ ranking
-    
-  
+  def getList: ListSet[Ranking] = rankingListRef.get()
+
+  def add(ranking: Ranking): Ranking =
+    val currentList = rankingListRef.get()
+    if (!currentList.contains(ranking)) {
+      val newList = currentList + ranking
+      rankingListRef.compareAndSet(currentList, newList)
+    }
+    ranking
+
+  def apply(value: Option[Int]): Ranking =
+    val ranking = new Ranking(value)
+    add(ranking)
+    ranking

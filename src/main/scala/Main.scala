@@ -3,21 +3,20 @@ import Entity.*
 
 import com.github.tototoshi.csv.*
 import java.io.File
+import java.util.concurrent.atomic.AtomicReference
+import scala.collection.immutable.ListSet
 
-@main def main=
-//object Main {
-//  def main(args: Array[String]): Unit = {
+@main def run_application : Unit=
     val reader = CSVReader.open(new File("src/main/resources/02-50BestRestaurants.csv"))
     val it = reader.iterator
 
     val col_names = it.next()
     val colNamesMap: Map[String, Int] = col_names.zipWithIndex.toMap
 
-    // jpc: avoind mutable collections
-    var restaurants = List[Restaurant]()
+    val restaurants = AtomicReference[ListSet[Restaurant]]
 
 
-    while (it.hasNext) do
+    while it.hasNext do
       val line = it.next()
 
       val ranking = Ranking(line(colNamesMap("Ranking")).toIntOption)
@@ -32,15 +31,10 @@ import java.io.File
       val currency = Currency(line(colNamesMap("Currency")))
       val description = line(colNamesMap("Description"))
 
-
-      restaurants = restaurants :+ Restaurant(restaurant, Place(city, country, coordinates), website, currency, description, ranking, Stars, chef, menu)
+      Restaurant(restaurant, Place(city, country, coordinates), website, currency, description, ranking, Stars, chef, menu)
 
     reader.close()
 
-    for(restaurant <- restaurants) do
+    for(restaurant <- Restaurant.getList) do
       restaurant.printDescription()
       println()
-    
-
-//  }
-//}

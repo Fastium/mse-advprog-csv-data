@@ -1,18 +1,24 @@
 package Entity
 
-case class City(value : String):
-  City.add(this) //jpc: I would avoid modifying mutable state here
+import java.util.concurrent.atomic.AtomicReference
+import scala.collection.immutable.ListSet
 
+case class City(value : String)
 
 object City :
-  // jpc: don't use mutable collections, not a good practice in general
-  private var cityList: List[City] = List()
-  
-  def getList: List[City] = cityList
+  private val cityListRef: AtomicReference[ListSet[City]] = new AtomicReference(ListSet.empty[City])
 
-  private def add(city: City): Unit = 
-    if (!cityList.exists(_.value == city.value)) {
-      cityList = cityList :+ city
+  def getList: ListSet[City] = cityListRef.get()
+
+  def add(city: City): City =
+    val currentList = cityListRef.get()
+    if (!currentList.exists(_.value == city.value)) {
+      val newList = currentList + city
+      cityListRef.compareAndSet(currentList, newList)
     }
-  
+    city
 
+  def apply(value: String): City =
+    val city = new City(value)
+    add(city)
+    city
