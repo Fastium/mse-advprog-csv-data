@@ -1,17 +1,24 @@
 package Entity
 
-case class Country(value: String) :
-  Country.add(this)
+import java.util.concurrent.atomic.AtomicReference
+import scala.collection.immutable.ListSet
 
+case class Country(value: String)
 
-object Country :
-  private var countryList: List[Country] = List() // jpc: better not use var
+object Country:
+  private val countryListRef: AtomicReference[ListSet[Country]] = new AtomicReference(ListSet.empty[Country])
 
-  def getList: List[Country] = countryList
+  def getList: ListSet[Country] = countryListRef.get()
 
-  // jpc: Unit return values means you are doing side effects and this is not a good practice. I would refrain from using mutable collections in this type of scenarios
-  private def add(country: Country): Unit = 
-    if (!countryList.exists(_.value == country.value)) {
-      countryList = countryList :+ country
+  def add(country: Country): Country =
+    val currentList = countryListRef.get()
+    if (!currentList.exists(_.value == country.value)) {
+      val newList = currentList + country
+      countryListRef.compareAndSet(currentList, newList)
     }
-  
+    country
+
+  def apply(value: String): Country =
+    val country = new Country(value)
+    add(country)
+    country

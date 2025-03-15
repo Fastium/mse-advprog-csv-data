@@ -1,17 +1,24 @@
 package Entity
 
-case class Currency(value: String) :
-  Currency.add(this)  // jpc: same problem here as in the other classes
+import java.util.concurrent.atomic.AtomicReference
+import scala.collection.immutable.ListSet
 
+case class Currency(value: String)
 
-object Currency :
-  //jpc: get rid of your mutable state
-  private var currencyList: List[Currency] = List()
+object Currency:
+  private val currencyListRef: AtomicReference[ListSet[Currency]] = new AtomicReference(ListSet.empty[Currency])
 
-  def getList: List[Currency] = currencyList
+  def getList: ListSet[Currency] = currencyListRef.get()
 
-  private def add(currency: Currency): Unit = 
-    if (!currencyList.exists(_.value == currency.value)) {
-      currencyList = currencyList :+ currency
+  def add(currency: Currency): Currency =
+    val currentList = currencyListRef.get()
+    if (!currentList.exists(_.value == currency.value)) {
+      val newList = currentList + currency
+      currencyListRef.compareAndSet(currentList, newList)
     }
-  
+    currency
+
+  def apply(value: String): Currency =
+    val currency = new Currency(value)
+    add(currency)
+    currency
