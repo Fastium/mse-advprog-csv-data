@@ -15,7 +15,6 @@ import scala.collection.immutable.ListSet
 
     val restaurants = AtomicReference[ListSet[Restaurant]]
 
-
     while it.hasNext do
       val line = it.next()
 
@@ -35,6 +34,14 @@ import scala.collection.immutable.ListSet
 
     reader.close()
 
-    for(restaurant <- Restaurant.getList) do
-      restaurant.printDescription()
-      println()
+//    for(b <- Business.getList) do
+//      b.printDescription()
+//      println()
+    
+    // Filter by country
+    val criteria = Map(RestaurantCriteria.Country -> "Italy")
+    
+    for (r <- Restaurant.getList) do
+      if RestaurantFilter.matches(r, criteria) then
+        r.printDescription()
+        println()

@@ -1,9 +1,11 @@
 package TopRestaurant
 
 import Entity.*
-import Utils.Describable
+import Utils.FilterCriteria
+
 import java.util.concurrent.atomic.AtomicReference
 import scala.collection.immutable.ListSet
+
 
 case class Restaurant(
                        override val name: String,
@@ -45,3 +47,29 @@ object Restaurant:
     val restaurant = new Restaurant(name, place, website, currency, description, ranking, stars, chef, menu)
     add(restaurant)
     restaurant
+
+
+enum RestaurantCriteria:
+  case Country
+  case City
+  case Stars
+  case minRanking
+  case Chef
+  case Menu
+  case Currency
+
+object RestaurantFilter extends FilterCriteria :
+  type ItemType = Restaurant
+  type CriteriaType = Map[RestaurantCriteria, Any]
+
+  def matches(restaurant: ItemType, criteria: CriteriaType): Boolean =
+    criteria.forall:
+      case (RestaurantCriteria.Country, country) => restaurant.country == country
+      case (RestaurantCriteria.City, city) => restaurant.city == city
+      case (RestaurantCriteria.Stars, stars) => restaurant.stars == stars
+      case (RestaurantCriteria.minRanking, minRanking) => restaurant.ranking >= minRanking
+
+
+
+
+
