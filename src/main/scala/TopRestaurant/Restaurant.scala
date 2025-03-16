@@ -15,9 +15,13 @@ case class Restaurant(
                        override val description: String,
                        ranking: Ranking,
                        stars: Option[Int],
-                       chef: String,
-                       menu: Option[Int]
-                     ) extends Business(name, place, website, currency, description)
+                       chef: Chef,
+                       menu: Option[Int],
+                       team: Team[Cook] = Team[Cook]() ) extends Business(name, place, website, currency, description)
+
+
+
+
 
 object Restaurant:
   private val restaurantListRef: AtomicReference[ListSet[Restaurant]] = new AtomicReference(ListSet.empty[Restaurant])
@@ -33,6 +37,12 @@ object Restaurant:
     Business.add(restaurant)
     restaurant
 
+  def update(oldRestaurant: Restaurant, newRestaurant: Restaurant): Unit =
+    val currentList = restaurantListRef.get()
+    if currentList.contains(oldRestaurant) then
+      val newList = (currentList - oldRestaurant) + newRestaurant
+      restaurantListRef.compareAndSet(currentList, newList)
+
   def apply(
              name: String,
              place: Place,
@@ -41,7 +51,7 @@ object Restaurant:
              description: String,
              ranking: Ranking,
              stars: Option[Int],
-             chef: String,
+             chef: Chef,
              menu: Option[Int]
            ): Restaurant =
     val restaurant = new Restaurant(name, place, website, currency, description, ranking, stars, chef, menu)
@@ -54,9 +64,7 @@ enum RestaurantCriteria:
   case City
   case Stars
   case minRanking
-  case Chef
-  case Menu
-  case Currency
+
 
 object RestaurantFilter extends FilterCriteria :
   type ItemType = Restaurant
@@ -64,10 +72,10 @@ object RestaurantFilter extends FilterCriteria :
 
   def matches(restaurant: ItemType, criteria: CriteriaType): Boolean =
     criteria.forall:
-      case (RestaurantCriteria.Country, country) => restaurant.country == country
-      case (RestaurantCriteria.City, city) => restaurant.city == city
-      case (RestaurantCriteria.Stars, stars) => restaurant.stars == stars
-      case (RestaurantCriteria.minRanking, minRanking) => restaurant.ranking >= minRanking
+      case (RestaurantCriteria.Country, country) => restaurant.country == country.toString
+      case (RestaurantCriteria.City, city) => restaurant.city == city.toString
+      case (RestaurantCriteria.Stars, stars) => restaurant.stars == stars.toString.toIntOption
+      case (RestaurantCriteria.minRanking, minRanking) => restaurant.ranking.value.get >= minRanking.toString.toIntOption.get
 
 
 
