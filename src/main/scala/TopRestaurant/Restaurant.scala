@@ -58,6 +58,11 @@ object Restaurant:
     add(restaurant)
     restaurant
 
+  // calculate restaurant menu price with discount and number of people
+  // use of lambda function, because it can totally be parallelized
+  val lb_calculate_price: (Restaurant, Option[Int], Option[Int]) => Restaurant = (restaurant: Restaurant, discount: Option[Int], people: Option[Int]) =>
+    restaurant.copy(menu = Option[Int](restaurant.menu.get - (restaurant.menu.get * discount.get / 100) * people.get))
+
 
 enum RestaurantCriteria:
   case Country
@@ -76,8 +81,3 @@ object RestaurantFilter extends FilterCriteria :
       case (RestaurantCriteria.City, city) => restaurant.city == city.toString
       case (RestaurantCriteria.Stars, stars) => restaurant.stars == stars.toString.toIntOption
       case (RestaurantCriteria.minRanking, minRanking) => restaurant.ranking.value.get >= minRanking.toString.toIntOption.get
-
-
-
-
-

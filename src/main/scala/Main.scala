@@ -55,7 +55,7 @@ import scala.collection.immutable.ListSet
       RestaurantFilter.matches(r, criteria2)
     )
 
-    // Build team
+    // Build team to use
     r_spain_axpe match {
       case Some(restaurant) =>
         restaurant.printDescription()
@@ -73,4 +73,20 @@ import scala.collection.immutable.ListSet
       case None =>
         println("No restaurant found matching criteria")
     }
+
+    // calculation of discount on all restaurants
+    println("Price on all restaurants: \n")
+    val discount = Option[Int](10)
+    val numberPeople = Option[Int](4)
+    // use the map function to calculate the price of each restaurant with a lambda function to parallelize the calculation
+    val newRestaurantsPrices = Restaurant.getList.map(r =>
+      Restaurant.lb_calculate_price(r, discount, numberPeople)
+    )
+    for (r <- newRestaurantsPrices) do
+      r.printDescription()
+      println("Price: " + r.menu.get + " " + r.currency.value + " (discount: " + discount.get + "%, people: " + numberPeople.get + ")")
+      println()
+
+
+
 
