@@ -99,5 +99,14 @@ import scala.collection.immutable.ListSet
     restaurantPriceLessThan200AndRankingGreaterThan50.foreach(r => r.printDescription())
 
 
-
-
+    // get coordinates with call-by-name of a swiss restaurant
+    val restaurantSwitzerland = Restaurant.getList.find(r => r.country == "Switzerland")
+    println("Restaurant in Switzerland with coordinates: \n")
+    restaurantSwitzerland match {
+      case Some(restaurant) =>
+        val (latitude, longitude) = restaurant.place.coordinates.getCoordinates()
+        restaurant.printDescription()
+        println("Coordinates: " + latitude.get + ", " + longitude.get)
+      case None =>
+        println("No restaurant found matching criteria")
+    }
