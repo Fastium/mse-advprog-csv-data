@@ -87,6 +87,17 @@ import scala.collection.immutable.ListSet
       println("Price: " + r.menu.get + " " + r.currency.value + " (discount: " + discount.get + "%, people: " + numberPeople.get + ")")
       println()
 
+    // filter with anonymous function
+    // all restaurants with a menu price less than 200
+    val restaurantPriceLessThan200 = Restaurant.getList.filter(r => r.menu.get < 200)
+    println("Restaurants with a menu price less than 200: \n")
+    restaurantPriceLessThan200.foreach(r => r.printDescription())
+
+    // all restaurants with a menu price less than 200 and a ranking greater than 50
+    val restaurantPriceLessThan200AndRankingGreaterThan50 = Restaurant.getList.filter(r => r.menu.get < 350 && r.ranking.value.get < 10)
+    println("Restaurants with a menu price less than 350 and a ranking greater than 10: \n")
+    restaurantPriceLessThan200AndRankingGreaterThan50.foreach(r => r.printDescription())
+
 
 
 

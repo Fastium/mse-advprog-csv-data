@@ -10,5 +10,6 @@ trait Describable :
     println("Name: " + name)
     println("Location: " + country + ", " + city)
     println("Description: " + description)
+    println()
   
 

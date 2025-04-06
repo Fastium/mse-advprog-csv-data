@@ -17,7 +17,7 @@ case class Restaurant(
                        stars: Option[Int],
                        chef: Chef,
                        menu: Option[Int],
-                       team: Team[Cook] = Team[Cook]() ) extends Business(name, place, website, currency, description)
+                       team: Team[Cook] = Team[Cook]()) extends Business(name, place, website, currency, description)
 
 
 
